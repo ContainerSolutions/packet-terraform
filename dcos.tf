@@ -5,10 +5,10 @@ provider "packet" {
 resource "packet_device" "dcos_bootstrap" {
   hostname = "${format("${var.dcos_cluster_name}-bootstrap-%02d", count.index)}"
 
-  operating_system = "coreos_stable"
+  operating_system = "ubuntu_16_04"
   plan             = "${var.packet_boot_type}"
   connection {
-    user = "core"
+    user = "root"
     private_key = "${file("${var.dcos_ssh_key_path}")}"
   }
   user_data     = "#cloud-config\n\nmanage_etc_hosts: \"localhost\"\nssh_authorized_keys:\n  - \"${file("${var.dcos_ssh_public_key_path}")}\"\n"
@@ -54,7 +54,7 @@ resource "packet_device" "dcos_bootstrap" {
 
 resource "packet_device" "dcos_master" {
   hostname = "${format("${var.dcos_cluster_name}-master-%02d", count.index)}"
-  operating_system = "coreos_stable"
+  operating_system = "ubuntu_16_04"
   plan             = "${var.packet_master_type}"
 
   count         = "${var.dcos_master_count}"
@@ -63,7 +63,7 @@ resource "packet_device" "dcos_master" {
   project_id    = "${var.packet_project_id}"
   billing_cycle = "hourly"
   connection {
-    user = "core"
+    user = "root"
     private_key = "${file("${var.dcos_ssh_key_path}")}"
   }
   provisioner "local-exec" {
@@ -87,7 +87,7 @@ resource "packet_device" "dcos_master" {
 resource "packet_device" "dcos_agent" {
   hostname = "${format("${var.dcos_cluster_name}-agent-%02d", count.index)}"
   depends_on = ["packet_device.dcos_bootstrap"]
-  operating_system = "coreos_stable"
+  operating_system = "ubuntu_16_04"
   plan             = "${var.packet_agent_type}"
 
   count         = "${var.dcos_agent_count}"
@@ -96,7 +96,7 @@ resource "packet_device" "dcos_agent" {
   project_id    = "${var.packet_project_id}"
   billing_cycle = "hourly"
   connection {
-    user = "core"
+    user = "root"
     private_key = "${file("${var.dcos_ssh_key_path}")}"
   }
   provisioner "local-exec" {
@@ -115,7 +115,7 @@ resource "packet_device" "dcos_agent" {
 resource "packet_device" "dcos_public_agent" {
   hostname = "${format("${var.dcos_cluster_name}-public-agent-%02d", count.index)}"
   depends_on = ["packet_device.dcos_bootstrap"]
-  operating_system = "coreos_stable"
+  operating_system = "ubuntu_16_04"
   plan             = "${var.packet_agent_type}"
 
   count         = "${var.dcos_public_agent_count}"
@@ -124,7 +124,7 @@ resource "packet_device" "dcos_public_agent" {
   project_id    = "${var.packet_project_id}"
   billing_cycle = "hourly"
   connection {
-    user = "core"
+    user = "root"
     private_key = "${file("${var.dcos_ssh_key_path}")}"
   }
   provisioner "local-exec" {
